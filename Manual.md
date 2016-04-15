@@ -26,21 +26,31 @@ ASP.NET Core 是新一代的 .NET Core 的 Web 開發平台，它除了能跑在
 
 ### Step 1. ###
 啟動 Visual Studio 2015，開啟完成後選擇檔案 -> 新增 -> 專案，在新增專案對話盒中選擇 Visual C# -> Web
-，確定 .NET Framework 是 4.6.1，然後選 ASP.NET Web 應用程式，按新增。
+，確定 .NET Framework 是 4.6.1，然後選 ASP.NET Web 應用程式，若右邊的 Application Insights 有勾選，
+請先點掉 (因為用不到)，然後按確定。
+
+![](images/CreateAspNetCoreProject.png)
 
 ### Step 2. ###
-在新增 Web 專案視窗，選擇 ASP.NET 5 應用程式，可選擇 Empty 或是 Web Application，這會影響後面部署完成後
-看到的畫面，在實驗中選擇 Web Application，若旁選的 Microsoft Azure 部署有打勾，請先點掉，Application 
-Insights 亦然。完成後按確定。
+在新增 Web 專案視窗，選擇 ASP.NET 5 範本，可選擇 Empty 或是 Web Application，這會影響後面部署完成後
+看到的畫面，在實驗中選擇 Web Application，若旁選的 Microsoft Azure 部署有打勾，請先點掉，然後按確定。
+
+![](images/CreateAspNetCoreProject2.png)
 
 ## 工作 3. 加入 Docker 的支援 ##
 
 這個工作必須要安裝 Visual Studio Tools for Docker 才會有作用。
 
-### Step 1. ###
 在方才建立的 ASP.NET Core 應用程式上按右鍵，選擇加入，然後選擇 Docker Support，這時 Visual Studio 會
 加入一些 Docker 有關的資源到專案裡面。
 
+![](images/AddDockerSupport.png)
+
+加入完成後，你會看到 Properties 有新增一些檔案，以及多了一個 Docker 資料夾。
+
+![](images/AddDockerSupport2.png)
+
+你稍後會改到 Docker.props 這個檔案。
 
 ## 工作 4. 部署 Azure 的 Docker VM ##
 
@@ -82,12 +92,35 @@ machine 才能重新做，為避免麻煩，所以要照 Azure Storage 的規定
 
 ![](images/DockerMachineLS.png)
 
+虛擬機器建置完成後，要記得到虛擬機器的網路安全群組打開 HTTP Port 80，最快的方式是由資源群組進去 (Docker Machine Azure Provider
+的預設資源群組名稱是 docker-machine)。
+
+![](images/ConfigureNSG.png)
+
 ## 工作 5. 修改 Docker.target，加入 Docker Machine 的名稱 ##
 
+請打開專案中的 Docker.props，找到 `<DockerMachineName></DockerMachineName>` 這個元素，將原本的 `default` 修改為你方才使用 
+docker-machine 指令建立 Docker VM 時所取的機器名稱，若忘記了，可執行 `docker-machine ls` 來取得。
+
+![](images/ConfigureDockerPropFile.png)
+
+修改完畢後，**請務必重新啟動 Visual Studio**，否則對 Docker.props 的修改不會生效。
 
 ## 工作 6. 部署 ASP.NET Core 應用程式到 Docker VM ##
 
+當 Visual Studio 重新啟動完成後，再次開啟 ASP.NET Core 專案，然後將啟動除錯器的按鈕下拉改成 Docker，同時將模式切換成 Release。
 
+![](images/DeployToDocker.png)
+
+然後按下它，Visual Studio 就會開始一連串的部署程序。
+
+準備完成後，PowerShell 會啟動指令並完成後續的程序。
+
+![](images/PowerShellActivate.png)
+
+部署完成時會打開瀏覽器，顯示 ASP.NET Core 應用程式。
+
+![](images/DeployCompleted.png) 
 
 # 總結 #
 本實驗實作了將 ASP.NET Core 應用程式部署到 Azure Docker VM 的過程，除了能體驗 ASP.NET Core 的跨平台能力，也間接的學習如何使用 
